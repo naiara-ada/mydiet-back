@@ -9,13 +9,8 @@ const modeloUsuarios = require('../../models').Usuarios
 
 const DietController = {
 
-    async getUsers(req, res){
-         
-        const mail = req.user.email
-        mail === process.env.PROJECT_ID ?  res.redirect('/dashboard') : res.redirect('/user')
-    },
-    // CRUD TABLA USUARIOS
-    async getUsuarioByCorreo(req , res){
+    //CRUD TABLA USUARIOS
+    async getUserByMail(req , res){
         const mail = req.user.email
         console.log(mail)
         try {
@@ -24,13 +19,13 @@ const DietController = {
                     Correo: `${req.params.Correo='marialopezmix@gmail.com'}`
                 }
             });
-// forma de mostrar el resultado:            
-//          res.json(JSON.stringify(user))
-/*
-            res.json({
-                data:{Usuario: user}
-            })
-*/
+            // forma de mostrar el resultado:            
+            //          res.json(JSON.stringify(user))
+            /*
+                        res.json({
+                            data:{Usuario: user}
+                        })
+            */
             res.json(user)
         } catch (error) {
             res.status(500).send({message: 'Error finding E-Mail', error});
@@ -45,6 +40,9 @@ const DietController = {
         } catch(error){
 
         }
+    },
+    async alldietary(req, res){
+
     }
 }
 

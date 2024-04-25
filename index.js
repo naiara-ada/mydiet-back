@@ -1,5 +1,5 @@
 const express = require('express')
-const {where } = require('sequelize')
+//const {where } = require('sequelize')
 const app= express();
 const dotenv = require('dotenv')
 const cors = require('cors')

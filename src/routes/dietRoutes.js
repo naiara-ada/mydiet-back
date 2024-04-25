@@ -4,9 +4,9 @@ const DietController = require('../controllers/dietController.js')
 const decodeToken = require('../middlewares/authMiddleware.js')
 
 
-router.get('/', DietController.getUsers,DietController.getUsuarioByCorreo) 
+router.get('/') 
 //router.post('/login',  decodeToken, DietController.login)
-router.get('/user', decodeToken, DietController.user)  //home del user
+router.get('/user', decodeToken, DietController.getUserByMail)  //home del user
 router.get('/user/:id/alldietary', decodeToken, DietController.alldietary) // saca todos los dietarios
 router.get('/user/:id/alldietary/:id_plan') //dietario concreto
 router.get('/user/recipe/:id') //para sacar la receta y su preparación
