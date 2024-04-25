@@ -6,7 +6,7 @@ const decodeToken = require('../middlewares/authMiddleware.js')
 
 
 
-router.get('/') 
+router.get('/',DietController.getUsuarioByCorreo) 
 router.post('/login',  decodeToken, DietController.login)
 router.get('/user')  //home del user
 router.get('/user/:id/dietary') //dietario actual
