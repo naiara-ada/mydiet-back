@@ -19,5 +19,9 @@ router.get('/dashboard/users', decodeToken, DietController.getAllUsers) //salen 
 router.get('/dashboard/users/:id', decodeToken, DietController.getUserTracking) //seguimiento del paciente ID
 router.post('/dashboard/users/newuser', decodeToken, DietController.createNewUser)
 router.get('/dashboard/recipes', decodeToken, DietController.getRecipes)
+router.post('/dashboard/recipes/newrecipe', decodeToken, DietController.newRecipe)
+router.put('/desayuno', decodeToken, DietController.putDesayuno)
+router.put('/comida', decodeToken, DietController.putComida)
+router.put('/cena', decodeToken, DietController.putCena)
 
 module.exports = router;

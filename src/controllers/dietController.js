@@ -6,6 +6,9 @@ const {where } = require('sequelize')
 // importar modelos
 const modeloUsuarios = require('../../models').Usuarios
 const modeloComida = require('../../models').Comidas
+const modeloDesayuno = require('../../models').Desayunos
+const modeloCena = require('../../models').Cenas
+const modeloSeguimiento = require('../../models').SeguimientoCita
 
 
 const DietController = {
@@ -112,12 +115,26 @@ const DietController = {
 
     async getMyTracking (req, res){
         console.log(req.params.id)
-
+        /*
         const tracking = {
             weight: [73.7, 75.2, 73.7, 72.3, 71.4, 70.3, 69.9, 69.6, 65.8, 66.4, 63.7, 63.9, 62.7, 62.4, 61.5],
             dates: ['12/05/2023', '23/05/2023', '30/05/2023', '20/06/2023', '27/06/2023', '04/07/2023', '18/07/2023', '08/09/2023', '19/10/2023', '16/11/2023', '14/12/2023', '17/01/2024', '14/02/2024', '13/03/2024', '10/04/2024']
+        }*/
+        const id = req.params.id
+
+        try {
+            const tracking = await modeloSeguimiento.findAll({
+                where:{
+                    User_id: id
+                }
+            })
+            console.log(tracking)
+            res.json(JSON.stringify(tracking))
+            
+        } catch (error) {
+            console.log(error)
         }
-        res.json(JSON.stringify(tracking))
+       
     },
 
     async getAllUsers (req, res){
@@ -140,12 +157,106 @@ const DietController = {
        try {
             console.log('getRecipes')
             const comida = await modeloComida.findAll();
-            console.log(comida);
-            res.json(JSON.stringify(comida))
+            const desayuno = await modeloDesayuno.findAll();
+            const cena = await modeloCena.findAll();
+            const recetas = [desayuno, comida, cena]
+            
+            res.json(JSON.stringify(recetas))
         
        } catch (error) {
         console.error(error)
        }
+    },
+
+    async putComida (req, res){
+        try {
+            const comida = req.body
+            console.log(comida)
+            const newComida = await modeloComida.update(
+                {   Titulo: comida.Titulo,
+                    Ingredientes: comida.Ingredientes,
+                    Preparacion: comida.Preparacion
+                },
+                {where:{
+                    id: comida.id
+                }}
+            )
+             res.json(newComida)
+
+        } catch(error){
+            console.error(error)
+        }
+        
+    },
+    async putCena (req, res){
+        try {
+            const cena = req.body
+            console.log(cena)
+            const newCena = await modeloCena.update(
+                {   Titulo: cena.Titulo,
+                    Ingredientes: cena.Ingredientes,
+                    Preparacion: cena.Preparacion
+                },
+                {where:{
+                    id: cena.id
+                }}
+            )
+             res.json(newCena)
+
+        } catch(error){
+            console.error(error)
+        }
+       
+    },
+
+    async putDesayuno (req, res){
+        try {
+            const desayuno = req.body
+            console.log(desayuno)
+            const newDesayuno = await modeloDesayuno.update(
+                {   Titulo: desayuno.Titulo,
+                    Ingredientes: desayuno.Ingredientes,
+                    Preparacion: desayuno.Preparacion
+                },
+                {where:{
+                    id: desayuno.id
+                }}
+            )
+             res.json(newDesayuno)
+
+        } catch(error){
+            console.error(error)
+        }
+    },
+
+    async newRecipe(req, res){
+        const dataRecipe = req.body
+        let modelo;
+        switch (dataRecipe.tipo){
+            case 'desayuno': 
+                modelo = modeloDesayuno;
+                break;
+            case 'comida':
+                modelo = modeloComida;
+                break;
+            case 'cena':
+                modelo = modeloCena;
+                break;
+        }
+        try {
+            console.log(modelo)
+            const newRecipe = await modelo.create({
+                Titulo: dataRecipe.Titulo,
+                Ingredientes: dataRecipe.Ingredientes,
+                Preparacion: dataRecipe.Preparacion
+             });
+             res.json(newRecipe)
+            
+        } catch (error) {
+            console.log(error)
+        }
+
+
     }
 
 
