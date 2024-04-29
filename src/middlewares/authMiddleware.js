@@ -7,7 +7,6 @@ const decodeToken = async (req, res, next) =>{
         const decodeValue = await admin.auth().verifyIdToken(token);
         if(decodeValue){
             req.user = decodeValue
-            
             return next();
         }        
 
