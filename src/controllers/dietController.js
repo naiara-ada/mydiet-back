@@ -1,6 +1,6 @@
 const dotenv = require('dotenv');
 const client = require('../../config/config'); // Importar la instacncia del cliente de la base de datos
-const { json } = require('sequelize');
+//const { json } = require('sequelize');
 dotenv.config();
 
 
@@ -22,7 +22,7 @@ const DietController = {
             
             const resultado = result.rows[0];
             console.log('!!!!!!!RESULTADO!!!!',resultado);
-            res,json(JSON.stringify(resultado));
+            res.json(JSON.stringify(resultado));
 
 
         } catch (err){
