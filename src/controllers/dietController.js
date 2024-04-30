@@ -1,33 +1,40 @@
 const dotenv = require('dotenv');
+const client = require('../../config/config'); // Importar la instacncia del cliente de la base de datos
+//const { json } = require('sequelize');
 dotenv.config();
-const {where } = require('sequelize')
 
 
 // importar modelos
+/*
 const modeloUsuarios = require('../../models').Usuarios
 const modeloComida = require('../../models').Comidas
 const modeloDesayuno = require('../../models').Desayunos
 const modeloCena = require('../../models').Cenas
 const modeloSeguimiento = require('../../models').SeguimientoCita
-
+const modeloDias = require('../../models').Dias
+*/
 
 const DietController = {
 
     //CRUD TABLA USUARIOS
     async getUserByMail(req , res){
-        const mail = req.user.email
-        console.log(mail)
-        try {           
-            const user = await modeloUsuarios.findOne({
-                where: {
-                    Correo: mail
-                }
-            });
-                        
-            res.json(JSON.stringify(user))
+        const mail = req.user.email;
+        //const mail ='marialopezmix@gmail.com'
+        console.log('****MAIL***',mail);
+        try {
+            const queryMail =`SELECT * FROM usuarios WHERE Correo = '${mail}'`;
+            const result = await client.execute(queryMail);
+            // Así se accede a los datos que trae:
+            console.log(result.rows[0].id);
+            
+            const resultado = result.rows[0];
+            res.json(JSON.stringify(resultado));
 
-        } catch (error) {
-            console.error(error)
+
+        } catch (err){
+            console.error("Error al ejecutar la consulta:", err);
+            res.status(500).send("Error interno del servidor");
+
         }
     },
     async createNewUser(req, res) {
@@ -42,79 +49,60 @@ const DietController = {
         }
     },
     async alldietary(req, res){
-        // llamada a la DB para todos los planes
-        console.log(req.params.id)
-        const planes =[
-            {
-                idPlan:1,
-                nombre: 'Plan dietético 1'
-            },
-            {
-                idPlan:2,
-                nombre: 'Plan dietético 2'
-            },
-            {
-                idPlan:3,
-                nombre: 'Plan dietético 3'
-            },
-            {
-                idPlan:4,
-                nombre: 'Plan dietético 4'
-            },
-        ]
-        res.json(JSON.stringify(planes))
+        console.log('*****ID=*****',req.params.id)
+        const id = req.params.id;
+        const planNombre=[];
+        const planId =[];
+        try {
+            const queryPlan =`SELECT Nombre, Plan_id FROM plans WHERE User_id= '${id}'`;
+            const result = await client.execute(queryPlan);
+            res.json(result);
+            console.log ('****REsult AllDietary*****', result)
+            // guardamos los planes se la base de datos asociada al id en la variable planes
+            const planes = result.rows.map((row)=>{
+                planNombre.push(row.Nombre);
+                planId.push(row.Plan_id)
+        });
+            
+            
+            console.log('***Planes***', planNombre);
+            console.log('****Plan_id****', planId)
+
+        }catch(err){
+            console.error("Error al ejecutar la consulta:", err);
+            res.status(500).send("Error interno del servidor");
+
+        }
     },
 
     async getDietary (req, res){
-        console.log(req.params)
-        //con el idPlan sacamos los datos de todas las recetas de los 7 dias
-
-        const dietary ={
-            id:1,
-            nombre: 'Plan dietético 1',
-            dias1:[
-                {
-                 titulo: 'Cafe con leche',
-                 ingredientes: 'cafe: 50g - leche desnatada: 150g',
-                 preparacion: '-'
-                },
-                {
-                    titulo: 'Pure de verduras',
-                    ingredientes: 'Aceite: 5g - Espinaca: 75g - Patata: 75g',
-                    preparacion: '1. Pelar y trocear la patata y la zanahoria. Lavar y picar finamente las espinacas. Limpiar las judías verdes, eliminando los extremos y trocear'
-                },
-                {
-                    titulo: 'Tortilla de claras con pimiento y cebolla',
-                    ingredientes: ' Clara de huevo pasteurizada : 140 g (4 unidades) , Huevo de gallina : 60 g (1 unidad talla M) , Cebolla blanca : 90 g (1 unidad pequeña) , Pimiento rojo : 100 g (1/2 unidad mediana) , Aceite de oliva : 5 g (1 cucharada de postre) ,Sal común : 0.5 g',
-                    preparacion: '1. Cortar el pimiento y la cebolla en dados de similar tamaño. Saltear en una sartén con la cantidad indicada de aceite. 2 Batir el huevo con las claras y la sal. Agregar el salteado de hortalizas. 3. Volcar la mezcla en un recipiente adecuado para microondas. 4. Cuajar la tortilla en el microondas durante 6-7 minutos a máxima potencia. Nota: Las claras (ovoproducto pasteurizado) pueden comprarse en envases de 300 ml (10 claras aproximadamente)'
-                }
-            ],
-            dias2:[
-                {
-                 titulo: 'Cafe con leche',
-                 ingredientes: 'cafe: 50g - leche desnatada: 150g',
-                 preparacion: '-'
-                },
-                {
-                    titulo: 'Quinoa con langostinos',
-                    ingredientes: 'cantidades 1 persona: Quinoa : 60 g , Langostino : 50 g , Pimiento rojo : 30 g (2 rodaja) , Pimiento verde : 30 g (2rodajas) , Cebolla o cebolleta : 50 g (1/3 de cebolleta) , Caldo de pescado : 150 g , Aceite de oliva : 5 g (1 cucharada',
-                    preparacion: '1. Colocar la quinoa en un colador y lavar bajo el chorro de agua fría durante medio minuto. Cocer durante 15 minutos con el doble de caldo de pescado que de quinoa. Apagar el fuego y dejar reposar. 2. Pochar la cebolla y e',
-                },
-                {
-                    titulo: 'Pescadilla a la plancha con canonigos y zanahoria',
-                    ingredientes: ' Pescadilla : 200 g (2 unidades) , Canónigos : 40 g (1 plato pequeño) , Zanahoria : 80 g (1 unidad mediana (80g)) , Aceite de oliva : 8 g (1 cucharada de postre)',
-                    preparacion: '1. Cortar y desechar la cabeza y la cola de la pescadilla, abrir por la mitad y retirar la espina central y laterales. Untar la plancha con unas gotas de aceite y asar la pescadilla. 2. Mezclar los canónigos con la zanahoria cortada en rodajas finas y aliñar con aceite de oliva. 3. Emplatar la pescadilla asada con la ensalada de guarnición.'
-                }
-            ]
-            
-        }
+        console.log(req.params.Plan_id)
+        const plan_id= 1
+        const arrDiasRecetas =[];
         
-        res.json(JSON.stringify(dietary))
+        try {
+            const queryDiasRecetas = `SELECT id, Titulo, Ingredientes, Preparacion FROM desayunos WHERE Dias_id='${plan_id}' UNION ALL 
+                SELECT id, Titulo, Ingredientes, Preparacion FROM comidas WHERE Dias_id='${plan_id}' UNION ALL
+                SELECT id, Titulo, Ingredientes, Preparacion FROM cenas WHERE Dias_id='${plan_id}'`;
+            const result = await client.execute(queryDiasRecetas);
+            res.json(result);
+            console.log('*****RESULT de getDietary******',result);
+            const diasRecetas = result.rows.map((row)=>{
+                arrDiasRecetas.push(row.id, row.Titulo, row.Ingredientes, row.Preparacion);
+                
+            });
+            console.log('******ArrDiasRecetas***',arrDiasRecetas)
 
+
+        }catch(err){
+            console.error("Error al ejecutar la consulta:", err);
+            res.status(500).send("Error interno del servidor");
+
+        }
     },
 
     async getMyTracking (req, res){
-        console.log(req.params.id)
+        /*console.log(req.params.id)
         
         const id = req.params.id
 
@@ -129,18 +117,25 @@ const DietController = {
             
         } catch (error) {
             console.log(error)
-        }
+        }*/
        
     },
 
     async getAllUsers (req, res){
-        try {           
-            const users = await modeloUsuarios.findAll();
-                console.log(users)
-            res.json(JSON.stringify(users))
+        try {
+            const queryMail ='SELECT * FROM usuarios' ;
+            const result = await client.execute(queryMail);
+            // Así se accede a los datos que trae:
+            console.log(result.rows[0]);
+            
+            const resultado = result.rows[0];
+            res.json(JSON.stringify(result.rows));
 
-        } catch (error) {
-            console.error(error)
+
+        } catch (err){
+            console.error("Error al ejecutar la consulta:", err);
+            res.status(500).send("Error interno del servidor");
+
         }
 
 
@@ -252,8 +247,6 @@ const DietController = {
         } catch (error) {
             console.log(error)
         }
-
-
     },
 
     async updateTracking(req, res){
@@ -265,13 +258,45 @@ const DietController = {
                 Fecha: tracking.Fecha,
                 Hora_de_la_Cita: tracking.Hora_de_la_Cita,
                 Peso: tracking.Peso,
-                Grasa: tracking.Grasa
+                Grasa_Corporal: tracking.Grasa
             },
             {where:{
                 id: tracking.id
             }}
             )
             res.json(newtracking)        
+    },
+
+    async newTracking (req, res){
+        const userId = req.params.id
+        const tracking = req.body
+        try {
+            const newTracking = await modeloSeguimiento.create({
+                Fecha: tracking.Fecha,
+                Descripcion: tracking.Descripcion,
+                Hora_de_la_Cita: tracking.Hora_de_la_Cita,
+                User_id: userId
+            })
+            res.json(newTracking)
+
+
+            
+        } catch (error) {
+            console.error(error)
+        }
+
+    },
+
+    async getDiaries (req, res){
+        try {
+            const dia = await modeloDias.findAll();
+            res.json(JSON.stringify(dia))
+
+        } catch (error) {
+            console.error(error)
+        }
+       
+
     }
 
 
