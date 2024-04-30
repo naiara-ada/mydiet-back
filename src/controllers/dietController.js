@@ -115,11 +115,7 @@ const DietController = {
 
     async getMyTracking (req, res){
         console.log(req.params.id)
-        /*
-        const tracking = {
-            weight: [73.7, 75.2, 73.7, 72.3, 71.4, 70.3, 69.9, 69.6, 65.8, 66.4, 63.7, 63.9, 62.7, 62.4, 61.5],
-            dates: ['12/05/2023', '23/05/2023', '30/05/2023', '20/06/2023', '27/06/2023', '04/07/2023', '18/07/2023', '08/09/2023', '19/10/2023', '16/11/2023', '14/12/2023', '17/01/2024', '14/02/2024', '13/03/2024', '10/04/2024']
-        }*/
+        
         const id = req.params.id
 
         try {
@@ -151,6 +147,7 @@ const DietController = {
     },
 
     async getUserTracking (req, res){
+        
     },
 
     async getRecipes (req, res){
@@ -257,6 +254,24 @@ const DietController = {
         }
 
 
+    },
+
+    async updateTracking(req, res){
+        const tracking = req.body;
+        console.log('tracking',tracking)
+        const newtracking = await modeloSeguimiento.update(
+            {
+                Descripcion: tracking.Descripcion,
+                Fecha: tracking.Fecha,
+                Hora_de_la_Cita: tracking.Hora_de_la_Cita,
+                Peso: tracking.Peso,
+                Grasa: tracking.Grasa
+            },
+            {where:{
+                id: tracking.id
+            }}
+            )
+            res.json(newtracking)        
     }
 
 
