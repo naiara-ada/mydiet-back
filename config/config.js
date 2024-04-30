@@ -1,24 +1,10 @@
+const { createClient } = require('@libsql/client');
 require('dotenv').config();
-module.exports = {
-  "development": {
-    "username": process.env.DB_USERNAME,
-    "password": process.env.DB_PASSWORD,
-    "database": process.env.DB_NAME,
-    "host": "127.0.0.1",
-    "dialect": "mysql"
-  },
-  "test": {
-    "username": "root",
-    "password": null,
-    "database": "mydiet1_test",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
-  },
-  "production": {
-    "username": "root",
-    "password": null,
-    "database": "mydiet1_production",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+
+const client = createClient(
+  {
+    url: process.env.TURSO_DATABASE_URL,
+    authToken:process.env.TURSO_AUTH_TOKEN,
   }
-}
+);
+module.exports = client;
