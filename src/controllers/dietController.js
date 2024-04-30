@@ -1,16 +1,111 @@
 const dotenv = require('dotenv');
+const client = require('../../config/config'); // Importar la instacncia del cliente de la base de datos
+//const { json } = require('sequelize');
 dotenv.config();
-const {where } = require('sequelize')
 
 
+
+
+
+const DietController = {
+    // Crud Tabla de usuarios
+    async getUserByMail(req, res) {
+        const mail = req.user.email;
+        //const mail ='marialopezmix@gmail.com'
+        console.log('****MAIL***',mail);
+        try {
+            console.log('*****PASA****');
+            const queryMail =`SELECT * FROM usuarios WHERE Correo = '${mail}'`;
+            const result = await client.execute(queryMail);
+            // Así se accede a los datos que trae:
+            console.log(result.rows[0].id);
+            
+            const resultado = result.rows[0];
+            console.log('!!!!!!!RESULTADO!!!!',resultado);
+            res.json(JSON.stringify(resultado));
+
+
+        } catch (err){
+            console.error("Error al ejecutar la consulta:", err);
+            res.status(500).send("Error interno del servidor");
+
+        }
+    },
+    // Crud dietary
+    async alldietary(req, res) {
+        console.log('*****ID=*****',req.params.id)
+        const id = req.params.id;
+        const planNombre=[];
+        const planId =[];
+        try {
+            const queryPlan =`SELECT Nombre, Plan_id FROM plans WHERE User_id= '${id}'`;
+            const result = await client.execute(queryPlan);
+            res.json(result);
+            console.log ('****REsult AllDietary*****', result)
+            // guardamos los planes se la base de datos asociada al id en la variable planes
+            const planes = result.rows.map((row)=>{
+                planNombre.push(row.Nombre);
+                planId.push(row.Plan_id)
+        });
+            
+            
+            console.log('***Planes***', planNombre);
+            console.log('****Plan_id****', planId)
+
+        }catch(err){
+            console.error("Error al ejecutar la consulta:", err);
+            res.status(500).send("Error interno del servidor");
+
+        }
+    },
+    async getDietary(req, res) {
+        console.log(req.params.Plan_id)
+        const plan_id= 1
+        const arrDiasRecetas =[];
+        
+        try {
+            const queryDiasRecetas = `SELECT id, Titulo, Ingredientes, Preparacion FROM desayunos WHERE Dias_id='${plan_id}' UNION ALL 
+                SELECT id, Titulo, Ingredientes, Preparacion FROM comidas WHERE Dias_id='${plan_id}' UNION ALL
+                SELECT id, Titulo, Ingredientes, Preparacion FROM cenas WHERE Dias_id='${plan_id}'`;
+            const result = await client.execute(queryDiasRecetas);
+            res.json(result);
+            console.log('*****RESULT de getDietary******',result);
+            const diasRecetas = result.rows.map((row)=>{
+                arrDiasRecetas.push(row.id, row.Titulo, row.Ingredientes, row.Preparacion);
+                
+            });
+            console.log('******ArrDiasRecetas***',arrDiasRecetas)
+
+
+        }catch(err){
+            console.error("Error al ejecutar la consulta:", err);
+            res.status(500).send("Error interno del servidor");
+
+        }
+    },
+    // Crear Receta nueva Desayunos
+    async postDesayunos(req ,res) {
+        try {
+
+        } catch {
+
+        }
+    }
+
+}
+
+
+
+
+/*
 // importar modelos
 const modeloUsuarios = require('../../models').Usuarios
 const modeloComida = require('../../models').Comidas
 const modeloDesayuno = require('../../models').Desayunos
 const modeloCena = require('../../models').Cenas
 const modeloSeguimiento = require('../../models').SeguimientoCita
-
-
+*/
+/*
 const DietController = {
 
     //CRUD TABLA USUARIOS
@@ -115,11 +210,12 @@ const DietController = {
 
     async getMyTracking (req, res){
         console.log(req.params.id)
-        /*
-        const tracking = {
-            weight: [73.7, 75.2, 73.7, 72.3, 71.4, 70.3, 69.9, 69.6, 65.8, 66.4, 63.7, 63.9, 62.7, 62.4, 61.5],
-            dates: ['12/05/2023', '23/05/2023', '30/05/2023', '20/06/2023', '27/06/2023', '04/07/2023', '18/07/2023', '08/09/2023', '19/10/2023', '16/11/2023', '14/12/2023', '17/01/2024', '14/02/2024', '13/03/2024', '10/04/2024']
-        }*/
+        
+        //const tracking = {
+        //    weight: [73.7, 75.2, 73.7, 72.3, 71.4, 70.3, 69.9, 69.6, 65.8, 66.4, 63.7, 63.9, 62.7, 62.4, 61.5],
+        //    dates: ['12/05/2023', '23/05/2023', '30/05/2023', '20/06/2023', '27/06/2023', '04/07/2023', '18/07/2023', '08/09/2023', '19/10/2023', '16/11/2023', '14/12/2023', '17/01/2024', '14/02/2024', '13/03/2024', '10/04/2024']
+        //}
+        
         const id = req.params.id
 
         try {
@@ -262,6 +358,7 @@ const DietController = {
 
 
 }
+*/
 
 
 
