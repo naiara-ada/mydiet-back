@@ -218,8 +218,17 @@ const DietController = {
     },
 
     async updateRecipe (req, res){
-
-    }
+        const recipe = req.body;
+        const queryRecipe = `UPDATE ${recipe.Tabla} SET Titulo= '${recipe.Titulo}', Ingredientes='${recipe.Ingredientes}',
+         Preparacion= '${recipe.Preparacion}' WHERE id =${recipe.id}`;
+        try {
+            const upRecipe = await client.execute(queryRecipe)
+            res.json(upRecipe)
+            
+        } catch (error) {
+            console.log(error)
+        }
+  }
 
 }
 
