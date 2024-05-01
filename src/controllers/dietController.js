@@ -189,7 +189,7 @@ const DietController = {
      async updateTracking(req, res){
         const tracking = req.body;
         console.log('tracking',tracking)
-        queryPlan = `UPDATE seguimientocita SET Descripcion = '${tracking.Descripcion}',
+        const queryPlan = `UPDATE seguimientocita SET Descripcion = '${tracking.Descripcion}',
         Fecha= '${tracking.Fecha}', Hora_de_la_Cita= '${tracking.Hora_de_la_Cita}', Peso=${tracking.Peso},
         Grasa_Corporal= ${tracking.Grasa} WHERE id=${tracking.id}`;
         console.log('queryplan', queryPlan)
@@ -197,13 +197,29 @@ const DietController = {
         res.json(newtracking)
     },
 
-    async getMyTracking (req, res){
-        const id = req.params.id
-        const queryPlan =`SELECT * FROM seguimientocita WHERE User_id= '${id}'`;
-        const result = await client.execute(queryPlan);
-        res.json(JSON.stringify(result.rows))
-       
+    async getAgenda (req, res){
+         const queryAgenda = `SELECT seguimientocita.Fecha, seguimientocita.Hora_de_la_Cita, usuarios.Nombre,
+         usuarios.Apellido FROM seguimientocita JOIN usuarios ON usuarios.id = seguimientocita.User_id `
+
+         try {
+            const agenda = await client.execute(queryAgenda)
+            res.json(JSON.stringify(agenda.rows))
+            
+         } catch (error) {
+            console.error(error)
+         }
+
+
+
     },
+
+    async getDiaries (req, res){
+
+    },
+
+    async updateRecipe (req, res){
+
+    }
 
 }
 
