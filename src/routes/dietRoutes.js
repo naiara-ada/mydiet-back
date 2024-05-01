@@ -20,9 +20,10 @@ router.get('/dashboard', decodeToken) //home del admin
 router.get('/dashboard/users', decodeToken, DietController.getAllUsers) //salen todos los pacientes del dietista
 router.get('/dashboard/users/:id', decodeToken, DietController.getUserTracking) //seguimiento del paciente ID
 router.post('/dashboard/users/:id/newtracking', decodeToken, DietController.newTracking)
+router.put('/updatetracking', decodeToken, DietController.updateTracking)
 //router.post('/dashboard/users/newuser', decodeToken, DietController.createNewUser)
 router.get('/dashboard/recipes', decodeToken, DietController.getRecipes)
-//router.post('/dashboard/recipes/newrecipe', decodeToken, DietController.newRecipe)
+router.post('/dashboard/recipes/newrecipe', decodeToken, DietController.newRecipe)
 //router.get('/dashboard/diaries', decodeToken, DietController.getDiaries)
 //router.put('/desayuno', decodeToken, DietController.putDesayuno)
 //router.put('/comida', decodeToken, DietController.putComida)

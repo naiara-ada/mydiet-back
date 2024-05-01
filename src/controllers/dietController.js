@@ -43,10 +43,6 @@ const DietController = {
                 planId.push(row.Plan_id)
         });
             
-            
-            console.log('***Planes***', planNombre);
-            console.log('****Plan_id****', planId)
-
         }catch(err){
             console.error("Error al ejecutar la consulta:", err);
             res.status(500).send("Error interno del servidor");
@@ -55,7 +51,7 @@ const DietController = {
     },
     async getDietary(req, res) {
         console.log(req.params.Plan_id)
-        const plan_id= 1
+        const plan_id=req.params.id_plan;
         const arrDiasRecetas =[];
         
         try {
@@ -79,12 +75,37 @@ const DietController = {
         }
     },
     // Crear Receta nueva Desayunos
-    async postDesayunos(req ,res) {
-        try {
-
-        } catch {
-
+    async newRecipe(req ,res) {
+        const dataRecipe = req.body;
+        console.log(dataRecipe);
+        let tabla;
+        switch(dataRecipe.tipo) {
+            case 'desayuno':
+                tabla = 'desayunos';
+                break;
+            case 'comida':
+                tabla = 'comidas';
+                break;
+            case 'cena':
+                tabla ='cenas';
+                break;
         }
+        try {
+            console.log('!!!!TABLA!!!!!',tabla);
+            const queryNewRecipe =`INSERT INTO '${tabla}'(
+                Titulo, Ingredientes, Preparacion, createdAt, updatedAt) VALUES (
+                '${dataRecipe.Titulo}','${dataRecipe.Ingredientes}', '${dataRecipe.Preparacion}','2024-04-30 18:18:00','2024-04-30 18:18:00'
+                )`;
+                console.log('')
+            const result = await client.execute(queryNewRecipe);
+            res.json(JSON.stringify(result.rows));
+            console.log('!!!!!RESULT!!!!',(JSON.stringify(result.rows)));
+
+        }catch(err){
+            console.error("Error al ejecutar la consulta:", err);
+            res.status(500).send("Error interno del servidor");
+        } 
+    
     },
     async getAllUsers (req, res){
         try {
@@ -140,44 +161,37 @@ const DietController = {
      },
  
      async updateTracking(req, res){
-        const tracking = req.body;
-        console.log('tracking',tracking)
-        const newtracking = await modeloSeguimiento.update(
-            {
-                Descripcion: tracking.Descripcion,
-                Fecha: tracking.Fecha,
-                Hora_de_la_Cita: tracking.Hora_de_la_Cita,
-                Peso: tracking.Peso,
-                Grasa_Corporal: tracking.Grasa
-            },
-            {where:{
-                id: tracking.id
-            }}
-            )
-            res.json(newtracking)        
+        try {
+            const tracking = req.body;
+                console.log('tracking',tracking)
+                queryPlan = `UPDATE seguimientocita SET Descripcion = '${tracking.Descripcion}', 
+                Fecha= '${tracking.Fecha}', Hora_de_la_Cita= '${tracking.Hora_de_la_Cita}', Peso=${tracking.Peso},
+                Grasa_Corporal= ${tracking.Grasa} WHERE id=${tracking.id}`;
+                console.log('queryplan', queryPlan)
+                const newtracking = await client.execute(queryPlan)
+                res.json(newtracking) 
+            
+        } catch (error) {
+            console.log(error)
+        }
+
+            
     },
 
     async newTracking (req, res){
-        const userId = req.params.id
-        const tracking = req.body
-        
-        
-        /*
         try {
-            const newTracking = await modeloSeguimiento.create({
-                Fecha: tracking.Fecha,
-                Descripcion: tracking.Descripcion,
-                Hora_de_la_Cita: tracking.Hora_de_la_Cita,
-                User_id: userId
-            })
-            res.json(newTracking)
-
-
-            
-        } catch (error) {
-            console.error(error)
-        }*/
-
+            const userId = req.params.id
+            const tracking = req.body
+            const now = new Date();
+            const queryTracking = `INSERT INTO seguimientocita (Descripcion, Fecha, Hora_de_la_Cita, User_id, createdAt, updatedAt) VALUES (
+                '${tracking.Descripcion}', '${tracking.Fecha}', '${tracking.Hora_de_la_Cita}', ${userId}, '${now}','${now}')`
+            console.log('queryplan', queryTracking)
+            const newtracking = await client.execute(queryTracking)
+            res.json(newtracking)
+        
+    } catch (error) {
+            console.log(error)
+        }    
     },
 
 
