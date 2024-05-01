@@ -165,6 +165,7 @@ const DietController = {
             console.error("Error al ejecutar la consulta:", err);
         }
      },
+
      async newTracking (req, res){
         try {
             const userId = req.params.id
@@ -186,6 +187,7 @@ const DietController = {
         const result = await client.execute(queryPlan);
         res.json(JSON.stringify(result.rows))
      },
+
      async updateTracking(req, res){
         const tracking = req.body;
         console.log('tracking',tracking)
@@ -197,13 +199,9 @@ const DietController = {
         res.json(newtracking)
     },
 
-    async getMyTracking (req, res){
-        const id = req.params.id
-        const queryPlan =`SELECT * FROM seguimientocita WHERE User_id= '${id}'`;
-        const result = await client.execute(queryPlan);
-        res.json(JSON.stringify(result.rows))
-       
-    },
+   async getAgenda (req, res){
+        
+   }
 
 }
 
