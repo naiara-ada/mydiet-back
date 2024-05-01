@@ -10,9 +10,13 @@ router.get('/user', decodeToken, DietController.getUserByMail)  //home del user
 router.get('/user/:id/alldietary',decodeToken,  DietController.alldietary) // saca todos los dietarios
 router.get('/user/:id/alldietary/:id_plan',decodeToken, DietController.getDietary) //dietario concreto con todas las recetas e ingredientes y demas
 
-router.get('/user/recipe/:id') //para sacar la receta y su preparación
-router.get('/user/dietary/:id') //saca un dietario por id
-
+router.post('/dashboard/recipes/newrecipe', decodeToken, DietController.newRecipe)
+router.get('/dashboard/recipes', decodeToken, DietController.getRecipes)
+router.put('/updatetracking', decodeToken, DietController.updateTracking)
+router.post('/dashboard/users/newuser', decodeToken, DietController.createNewUser)
+router.get('/dashboard/users', decodeToken, DietController.getAllUsers) //salen todos los pacientes del dietista
+/*
+//router.get('/user/dietary/:id') //saca un dietario por id
 router.get('/user/:id/mytracking', decodeToken, DietController.getMyTracking) //seguimientos del usuario
 router.get('/user/:id/myagenda', decodeToken, DietController.getMyTracking ) //las citas
 
