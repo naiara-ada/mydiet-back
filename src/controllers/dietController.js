@@ -220,153 +220,20 @@ const DietController = {
         } catch (error) {
             console.log(error)
         }        
-    }
-
-
-
-}
-
-
-
-
-/*
-
-
-
-const DietController = {
-
-    //CRUD TABLA USUARIOS
-   
-    async createNewUser(req, res) {
-        try {
-            console.log('req.body', req.body)
-            const newUser = await modeloUsuarios.create(req.body);
-            res.status(201).send(newUser);
-            // res.json(newUser)
-
-        } catch(error){
-            console.error(error)
-        }
-    },
-    
-     
-
-   
-
-   
-
-    
-    async putComida (req, res){
-        try {
-            const comida = req.body
-            console.log(comida)
-            const newComida = await modeloComida.update(
-                {   Titulo: comida.Titulo,
-                    Ingredientes: comida.Ingredientes,
-                    Preparacion: comida.Preparacion
-                },
-                {where:{
-                    id: comida.id
-                }}
-            )
-             res.json(newComida)
-
-        } catch(error){
-            console.error(error)
-        }
-        
-    },
-    async putCena (req, res){
-        try {
-            const cena = req.body
-            console.log(cena)
-            const newCena = await modeloCena.update(
-                {   Titulo: cena.Titulo,
-                    Ingredientes: cena.Ingredientes,
-                    Preparacion: cena.Preparacion
-                },
-                {where:{
-                    id: cena.id
-                }}
-            )
-             res.json(newCena)
-
-        } catch(error){
-            console.error(error)
-        }
-       
     },
 
-    async putDesayuno (req, res){
+    async getDiaries (req, res){
         try {
-            const desayuno = req.body
-            console.log(desayuno)
-            const newDesayuno = await modeloDesayuno.update(
-                {   Titulo: desayuno.Titulo,
-                    Ingredientes: desayuno.Ingredientes,
-                    Preparacion: desayuno.Preparacion
-                },
-                {where:{
-                    id: desayuno.id
-                }}
-            )
-             res.json(newDesayuno)
-
-        } catch(error){
-            console.error(error)
-        }
-    },
-
-    async newRecipe(req, res){
-        const dataRecipe = req.body
-        let modelo;
-        switch (dataRecipe.tipo){
-            case 'desayuno': 
-                modelo = modeloDesayuno;
-                break;
-            case 'comida':
-                modelo = modeloComida;
-                break;
-            case 'cena':
-                modelo = modeloCena;
-                break;
-        }
-        try {
-            console.log(modelo)
-            const newRecipe = await modelo.create({
-                Titulo: dataRecipe.Titulo,
-                Ingredientes: dataRecipe.Ingredientes,
-                Preparacion: dataRecipe.Preparacion
-             });
-             res.json(newRecipe)
+            
             
         } catch (error) {
             console.log(error)
         }
-    },
-
-    
-
-    async getDiaries (req, res){
-        try {
-            const dia = await modeloDias.findAll();
-            res.json(JSON.stringify(dia))
-
-        } catch (error) {
-            console.error(error)
-        }
-       
-
     }
 
 
 
 }
-
-*/
-
-
-
 
 module.exports = DietController;
 
