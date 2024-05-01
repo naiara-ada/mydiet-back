@@ -31,26 +31,63 @@ const DietController = {
 
         }
     },
+    async createNewUser(req, res){
+        try {
+            const dataUser = req.body;
+            const now = new Date();
+            const queryNewUser =`INSERT INTO usuarios (
+                Nombre, Apellido, Contraseña, Rol_Usuario, Correo, Fecha_Registro, createdAt, updatedAt)
+                VALUES ('${dataUser.Nombre}', '${dataUser.Apellido}','${dataUser.Contraseña}', '${dataUser.Rol_Usuario}',
+                '${dataUser.Correo}', '${now}', '${now}', '${now}')`
+            const newUser = await client.execute(queryNewUser);
+            res.json(newUser);
+
+
+        } catch(err){
+            console.error("Error al ejecutar la consulta:", err);
+            res.status(500).send("Error interno del servidor");
+
+        }
+    },
+    async getAllUsers(req, res) {
+        try{
+            const queryAllUsers =`SELECT * FROM usuarios`
+            const allUsers = await client.execute(queryAllUsers);
+            res.json(JSON.stringify(allUsers.rows));
+
+        }catch(err){
+            console.error("Error al ejecutar la consulta:", err);
+            res.status(500).send("Error interno del servidor");
+
+        }
+    },
+    async putUser(req, res) {
+        try {
+            const putUser =req.body;
+            const queryPutUser = `INSERT INTO usuarios (Nombre, Apellido, Contraseña, Rol_Usuario
+                                Correo, Fecha_Registro, createdAt, updatedAr) VALUES (
+                                    '${putUser.Nombre}', '${putUser.Apellido}','${putUser.Contraseña}', '${putUser.Rol_Usuario}',
+                                    '${putUser.Correo}', '${now}', '${now}', '${now}')`
+            const newPutUser = await client.execute(queryPutUser);
+            res.json(newPutUser);
+        }catch(err){
+            console.error("Error al ejecutar la consulta:", err);
+            res.status(500).send("Error interno del servidor");
+
+        }
+    },
     // Crud dietary
     async alldietary(req, res) {
         console.log('*****ID=*****',req.params.id)
         const id = req.params.id;
-        const planNombre=[];
+        const planNombreId={};
         const planId =[];
         try {
-            const queryPlan =`SELECT Nombre, Plan_id FROM plans WHERE User_id= '${id}'`;
+            const queryPlan =`SELECT Plan_id, Nombre  FROM plans WHERE User_id= '${id}'`;
             const result = await client.execute(queryPlan);
-            res.json(result);
-            console.log ('****REsult AllDietary*****', result)
-            // guardamos los planes se la base de datos asociada al id en la variable planes
-            const planes = result.rows.map((row)=>{
-                planNombre.push(row.Nombre);
-                planId.push(row.Plan_id)
-        });
-            
-            
-            console.log('***Planes***', planNombre);
-            console.log('****Plan_id****', planId)
+            //console.log ('****REsult AllDietary*****', result)
+            res.json(JSON.stringify(result.rows));           
+            console.log('*****RESULT****', result.rows);
 
         }catch(err){
             console.error("Error al ejecutar la consulta:", err);
@@ -59,52 +96,117 @@ const DietController = {
         }
     },
     async getDietary(req, res) {
-        console.log(req.params.Plan_id)
-        const plan_id= 1
-        const arrDiasRecetas =[];
+        console.log(req.params.id_plan);
+       const plan_id=req.params.id_plan;
         
         try {
-            const queryDiasRecetas = `SELECT id, Titulo, Ingredientes, Preparacion FROM desayunos WHERE Dias_id='${plan_id}' UNION ALL 
-                SELECT id, Titulo, Ingredientes, Preparacion FROM comidas WHERE Dias_id='${plan_id}' UNION ALL
-                SELECT id, Titulo, Ingredientes, Preparacion FROM cenas WHERE Dias_id='${plan_id}'`;
-            const result = await client.execute(queryDiasRecetas);
-            res.json(result);
-            console.log('*****RESULT de getDietary******',result);
-            const diasRecetas = result.rows.map((row)=>{
-                arrDiasRecetas.push(row.id, row.Titulo, row.Ingredientes, row.Preparacion);
-                
-            });
-            console.log('******ArrDiasRecetas***',arrDiasRecetas)
+            const queryDesayunos =`SELECT * FROM desayunos WHERE Dias_id='${plan_id}'`;
+            const desayuno = await client.execute(queryDesayunos);
 
+            const queryComidas =`SELECT * FROM comidas WHERE Dias_id='${plan_id}'`;
+            const comida = await client.execute(queryComidas);
 
+            const queryCenas =`SELECT * FROM cenas WHERE Dias_id='${plan_id}'`;
+            const cena = await client.execute(queryCenas);
+
+            const recetas= [desayuno.rows, comida.rows, cena.rows];
+            console.log('!!!!!RECETAS**GETDIETARY!!!!',recetas);
+            res.json(JSON.stringify(recetas));
+           
         }catch(err){
             console.error("Error al ejecutar la consulta:", err);
             res.status(500).send("Error interno del servidor");
 
         }
     },
+    //Crud Recipes
     // Crear Receta nueva Desayunos
-    async postDesayunos(req ,res) {
-        try {
-
-        } catch {
-
+    async newRecipe(req ,res) {
+        const dataRecipe = req.body;
+        console.log(dataRecipe);
+        let tabla;
+        switch(dataRecipe.tipo) {
+            case 'desayuno':
+                tabla = 'desayunos';
+                break;
+            case 'comida':
+                tabla = 'comidas';
+                break;
+            case 'cena':
+                tabla ='cenas';
+                break;
         }
-    }
+        try {
+            console.log('!!!!TABLA!!!!!',tabla);
+            const queryNewRecipe =`INSERT INTO '${tabla}'(
+                Titulo, Ingredientes, Preparacion, createdAt, updatedAt) VALUES (
+                '${dataRecipe.Titulo}','${dataRecipe.Ingredientes}', '${dataRecipe.Preparacion}','${now}',''${now}''
+                )`;
+                console.log('')
+            const result = await client.execute(queryNewRecipe);
+            res.json(JSON.stringify(result.rows));
+            console.log('!!!!!RESULT!!!!',(JSON.stringify(result.rows)));
+
+        }catch(err){
+            console.error("Error al ejecutar la consulta:", err);
+            res.status(500).send("Error interno del servidor");
+        } 
+    
+    },
+    async getRecipes (req, res){
+        try {
+            const queryDesayunos ='SELECT * FROM desayunos' ;
+            const desayuno = await client.execute(queryDesayunos);
+            // Así se accede a los datos que trae:
+            console.log(desayuno.rows);
+            const queryComida ='SELECT * FROM comidas' ;
+            const comida = await client.execute(queryComida);
+            const queryCenas ='SELECT * FROM cenas' ;
+            const cena = await client.execute(queryCenas);
+            const recetas = [desayuno.rows, comida.rows, cena.rows]
+            console.log('*****',recetas)
+            res.json(JSON.stringify(recetas));
+        } catch (err){
+            console.error("Error al ejecutar la consulta:", err);
+        }
+     },
+     async newTracking (req, res){
+        try {
+            const userId = req.params.id
+            const tracking = req.body
+            const now = new Date();
+            const queryTracking = `INSERT INTO seguimientocita (Descripcion, Fecha, Hora_de_la_Cita, User_id, createdAt, updatedAt) VALUES (
+                '${tracking.Descripcion}', '${tracking.Fecha}', '${tracking.Hora_de_la_Cita}', ${userId}, '${now}','${now}')`
+            console.log('queryplan', queryTracking)
+            const newtracking = await client.execute(queryTracking)
+            res.json(newtracking)
+    } catch (error) {
+            console.log(error)
+        }
+    },
+
+    async getUserTracking (req, res){
+        const id = req.params.id
+        const queryPlan =`SELECT * FROM seguimientocita WHERE User_id= '${id}'`;
+        const result = await client.execute(queryPlan);
+        res.json(JSON.stringify(result.rows))
+     },
+     async updateTracking(req, res){
+        const tracking = req.body;
+        console.log('tracking',tracking)
+        queryPlan = `UPDATE seguimientocita SET Descripcion = '${tracking.Descripcion}',
+        Fecha= '${tracking.Fecha}', Hora_de_la_Cita= '${tracking.Hora_de_la_Cita}', Peso=${tracking.Peso},
+        Grasa_Corporal= ${tracking.Grasa} WHERE id=${tracking.id}`;
+        console.log('queryplan', queryPlan)
+        const newtracking = await client.execute(queryPlan)
+        res.json(newtracking)
+    },
 
 }
 
 
 
 
-/*
-// importar modelos
-const modeloUsuarios = require('../../models').Usuarios
-const modeloComida = require('../../models').Comidas
-const modeloDesayuno = require('../../models').Desayunos
-const modeloCena = require('../../models').Cenas
-const modeloSeguimiento = require('../../models').SeguimientoCita
-*/
 /*
 const DietController = {
 
