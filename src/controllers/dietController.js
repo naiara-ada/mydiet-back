@@ -194,6 +194,34 @@ const DietController = {
         }    
     },
 
+    async getAgenda (req, res){
+
+        try {
+            const queryAgenda = `SELECT seguimientocita.id, seguimientocita.Fecha, seguimientocita.Hora_de_la_Cita, seguimientocita.Descripcion,
+         usuarios.Nombre, usuarios.Apellido FROM seguimientocita JOIN usuarios ON usuarios.id = seguimientocita.User_id`
+        const agenda = await client.execute(queryAgenda);
+        res.json(JSON.stringify(agenda.rows))
+            
+        } catch (error) {
+            console.log(error)
+        }
+        
+ 
+    },
+
+    async updateRecipe (req, res){
+        try {
+            const data = req.body;
+            queryRecipe= `UPDATE ${data.Tabla} SET Titulo = '${data.Titulo}', Ingredientes= '${data.Ingredientes}',
+                Preparacion= '${data.Preparacion}' WHERE id=${data.id}`
+            const update = await client.execute(queryRecipe)
+            res.json(update)
+
+        } catch (error) {
+            console.log(error)
+        }        
+    }
+
 
 
 }

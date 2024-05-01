@@ -24,9 +24,9 @@ router.put('/updatetracking', decodeToken, DietController.updateTracking)
 //router.post('/dashboard/users/newuser', decodeToken, DietController.createNewUser)
 router.get('/dashboard/recipes', decodeToken, DietController.getRecipes)
 router.post('/dashboard/recipes/newrecipe', decodeToken, DietController.newRecipe)
+router.get('/dashboard/agenda', decodeToken, DietController.getAgenda)
 //router.get('/dashboard/diaries', decodeToken, DietController.getDiaries)
-//router.put('/desayuno', decodeToken, DietController.putDesayuno)
-//router.put('/comida', decodeToken, DietController.putComida)
-//router.put('/cena', decodeToken, DietController.putCena)
+router.put('/dashboard/recipes/updaterecipe', decodeToken, DietController.updateRecipe)
+
 
 module.exports = router;
