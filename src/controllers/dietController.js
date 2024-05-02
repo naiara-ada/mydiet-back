@@ -1,11 +1,6 @@
 const dotenv = require('dotenv');
 const client = require('../../config/config'); // Importar la instacncia del cliente de la base de datos
-//const { json } = require('sequelize');
 dotenv.config();
-
-
-
-
 
 const DietController = {
     // Crud Tabla de usuarios
@@ -194,54 +189,49 @@ const DietController = {
      async updateTracking(req, res){
         const tracking = req.body;
         console.log('tracking',tracking)
-        queryPlan = `UPDATE seguimientocita SET Descripcion = '${tracking.Descripcion}',
+        const queryPlan = `UPDATE seguimientocita SET Descripcion = '${tracking.Descripcion}',
         Fecha= '${tracking.Fecha}', Hora_de_la_Cita= '${tracking.Hora_de_la_Cita}', Peso=${tracking.Peso},
         Grasa_Corporal= ${tracking.Grasa} WHERE id=${tracking.id}`;
         console.log('queryplan', queryPlan)
         const newtracking = await client.execute(queryPlan)
         res.json(newtracking)
     },
-    
+
     async getAgenda (req, res){
-        const queryAgenda = `SELECT seguimientocita.Fecha, seguimientocita.Hora_de_la_Cita, usuarios.Nombre,
-        usuarios.Apellido FROM seguimientocita JOIN usuarios ON usuarios.id = seguimientocita.User_id `
+         const queryAgenda = `SELECT seguimientocita.Fecha, seguimientocita.Hora_de_la_Cita, usuarios.Nombre,
+         usuarios.Apellido FROM seguimientocita JOIN usuarios ON usuarios.id = seguimientocita.User_id `
 
+         try {
+            const agenda = await client.execute(queryAgenda)
+            res.json(JSON.stringify(agenda.rows))
+            
+         } catch (error) {
+            console.error(error)
+         }
+
+
+
+    },
+
+    async getDiaries (req, res){
+
+    },
+
+    async updateRecipe (req, res){
+        const recipe = req.body;
+        const queryRecipe = `UPDATE ${recipe.Tabla} SET Titulo= '${recipe.Titulo}', Ingredientes='${recipe.Ingredientes}',
+         Preparacion= '${recipe.Preparacion}' WHERE id =${recipe.id}`;
         try {
-           const agenda = await client.execute(queryAgenda)
-           res.json(JSON.stringify(agenda.rows))
-           
+            const upRecipe = await client.execute(queryRecipe)
+            res.json(upRecipe)
+            
         } catch (error) {
-           console.error(error)
+            console.log(error)
         }
-
-
-
-   },
-
-   async getDiaries (req, res){
-
-   },
-
-   async updateRecipe (req, res){
-       const recipe = req.body;
-       const queryRecipe = `UPDATE ${recipe.Tabla} SET Titulo= '${recipe.Titulo}', Ingredientes='${recipe.Ingredientes}',
-        Preparacion= '${recipe.Preparacion}' WHERE id =${recipe.id}`;
-       try {
-           const upRecipe = await client.execute(queryRecipe)
-           res.json(upRecipe)
-           
-       } catch (error) {
-           console.log(error)
-       }
- }
+  }
 
 }
 
 
 module.exports = DietController;
-
-
-
-
-
 
