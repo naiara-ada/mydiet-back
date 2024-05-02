@@ -6,17 +6,13 @@ const DietController = {
     // Crud Tabla de usuarios
     async getUserByMail(req, res) {
         const mail = req.user.email;
-        //const mail ='marialopezmix@gmail.com'
-        console.log('****MAIL***',mail);
+             
         try {
-            console.log('*****PASA****');
             const queryMail =`SELECT * FROM usuarios WHERE Correo = '${mail}'`;
             const result = await client.execute(queryMail);
-            // Así se accede a los datos que trae:
-            console.log(result.rows[0].id);
-            
+            // Así se accede a los datos que trae:                       
             const resultado = result.rows[0];
-            console.log('!!!!!!!RESULTADO!!!!',resultado);
+            
             res.json(JSON.stringify(resultado));
 
 
@@ -73,17 +69,16 @@ const DietController = {
     },
     // Crud dietary
     async alldietary(req, res) {
-        console.log('*****ID=*****',req.params.id)
+        
         const id = req.params.id;
         const planNombreId={};
         const planId =[];
         try {
             const queryPlan =`SELECT Plan_id, Nombre  FROM plans WHERE User_id= '${id}'`;
             const result = await client.execute(queryPlan);
-            //console.log ('****REsult AllDietary*****', result)
+            
             res.json(JSON.stringify(result.rows));           
-            console.log('*****RESULT****', result.rows);
-
+            
         }catch(err){
             console.error("Error al ejecutar la consulta:", err);
             res.status(500).send("Error interno del servidor");
@@ -91,7 +86,7 @@ const DietController = {
         }
     },
     async getDietary(req, res) {
-        console.log(req.params.id_plan);
+        
        const plan_id=req.params.id_plan;
         
         try {
@@ -105,7 +100,7 @@ const DietController = {
             const cena = await client.execute(queryCenas);
 
             const recetas= [desayuno.rows, comida.rows, cena.rows];
-            console.log('!!!!!RECETAS**GETDIETARY!!!!',recetas);
+            
             res.json(JSON.stringify(recetas));
            
         }catch(err){
@@ -119,6 +114,7 @@ const DietController = {
     async newRecipe(req ,res) {
         const dataRecipe = req.body;
         console.log(dataRecipe);
+        const now = new Date();
         let tabla;
         switch(dataRecipe.tipo) {
             case 'desayuno':
@@ -132,16 +128,14 @@ const DietController = {
                 break;
         }
         try {
-            console.log('!!!!TABLA!!!!!',tabla);
-            const queryNewRecipe =`INSERT INTO '${tabla}'(
+               const queryNewRecipe =`INSERT INTO ${tabla} (
                 Titulo, Ingredientes, Preparacion, createdAt, updatedAt) VALUES (
-                '${dataRecipe.Titulo}','${dataRecipe.Ingredientes}', '${dataRecipe.Preparacion}','${now}',''${now}''
+                '${dataRecipe.Titulo}','${dataRecipe.Ingredientes}', '${dataRecipe.Preparacion}','${now}','${now}'
                 )`;
-                console.log('')
+                
             const result = await client.execute(queryNewRecipe);
             res.json(JSON.stringify(result.rows));
-            console.log('!!!!!RESULT!!!!',(JSON.stringify(result.rows)));
-
+            
         }catch(err){
             console.error("Error al ejecutar la consulta:", err);
             res.status(500).send("Error interno del servidor");
@@ -153,13 +147,12 @@ const DietController = {
             const queryDesayunos ='SELECT * FROM desayunos' ;
             const desayuno = await client.execute(queryDesayunos);
             // Así se accede a los datos que trae:
-            console.log(desayuno.rows);
             const queryComida ='SELECT * FROM comidas' ;
             const comida = await client.execute(queryComida);
             const queryCenas ='SELECT * FROM cenas' ;
             const cena = await client.execute(queryCenas);
             const recetas = [desayuno.rows, comida.rows, cena.rows]
-            console.log('*****',recetas)
+            
             res.json(JSON.stringify(recetas));
         } catch (err){
             console.error("Error al ejecutar la consulta:", err);
@@ -173,7 +166,7 @@ const DietController = {
             const now = new Date();
             const queryTracking = `INSERT INTO seguimientocita (Descripcion, Fecha, Hora_de_la_Cita, User_id, createdAt, updatedAt) VALUES (
                 '${tracking.Descripcion}', '${tracking.Fecha}', '${tracking.Hora_de_la_Cita}', ${userId}, '${now}','${now}')`
-            console.log('queryplan', queryTracking)
+            
             const newtracking = await client.execute(queryTracking)
             res.json(newtracking)
     } catch (error) {
@@ -190,11 +183,11 @@ const DietController = {
 
      async updateTracking(req, res){
         const tracking = req.body;
-        console.log('tracking',tracking)
+        
         const queryPlan = `UPDATE seguimientocita SET Descripcion = '${tracking.Descripcion}',
         Fecha= '${tracking.Fecha}', Hora_de_la_Cita= '${tracking.Hora_de_la_Cita}', Peso=${tracking.Peso},
         Grasa_Corporal= ${tracking.Grasa} WHERE id=${tracking.id}`;
-        console.log('queryplan', queryPlan)
+        
         const newtracking = await client.execute(queryPlan)
         res.json(newtracking)
     },
@@ -216,7 +209,14 @@ const DietController = {
     },
 
     async getDiaries (req, res){
-
+        try {
+            const queryDiaries = `SELECT dias.id, dias.Nombre, dias.Fecha, dias.Desayuno_id, dias.Comida_id, dias.Cena_id FROM dias   `
+            const diaries = await client.execute(queryDiaries)
+            res.json(JSON.stringify(diaries.rows))
+            
+        } catch (error) {
+            console.error(error)
+        }
     },
 
     async updateRecipe (req, res){
@@ -230,6 +230,33 @@ const DietController = {
         } catch (error) {
             console.log(error)
         }
+  },
+
+  async updateDiary (req, res){
+    const diary = req.body;
+        const queryDiary = `UPDATE dias SET Nombre= '${diary.Nombre}', Desayuno_id=${diary.Desayuno_id},
+        Comida_id=${diary.Comida_id}, Cena_id=${diary.Cena_id} WHERE id =${diary.id}`;
+        try {
+            const upDiary = await client.execute(queryDiary)
+            res.json(upDiary)
+            
+        } catch (error) {
+            console.log(error)
+        }
+
+  }, 
+
+  async newDiary ( req, res){
+    const now = new Date();
+    try {
+        const diary = req.body;
+        const queryDiary = `INSERT INTO dias (Nombre, Fecha, Desayuno_id, Comida_id, Cena_id, createdAt, updatedAt )
+            VALUES ('${diary.Nombre}', '${diary.Fecha}', ${diary.Desayuno_id}, ${diary.Comida_id}, ${diary.Cena_id},'${now}','${now}' )`
+        const newDiary = await client.execute(queryDiary);
+        res.json(newDiary)       
+    } catch (error) {
+        console.log(error)
+    }
   }
 
 }
