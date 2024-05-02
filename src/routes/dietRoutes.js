@@ -16,6 +16,8 @@ router.get('/user/:id/myagenda', decodeToken, DietController.getUserTracking ) /
 router.get('/dashboard/users', decodeToken, DietController.getAllUsers) //salen todos los pacientes del dietista
 router.get('/dashboard/users/:id', decodeToken, DietController.getUserTracking) //seguimiento del paciente ID
 router.post('/dashboard/users/newuser', decodeToken, DietController.createNewUser)
+router.get('/dashboard/users/:id/getuserbyid', decodeToken, DietController.getUserById)
+router.put('/updateuser', decodeToken, DietController.updateUser)
 
 router.get('/dashboard/recipes', decodeToken, DietController.getRecipes)
 router.post('/dashboard/recipes/newrecipe', decodeToken, DietController.newRecipe)
