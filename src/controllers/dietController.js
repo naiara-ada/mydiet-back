@@ -4,6 +4,18 @@ dotenv.config();
 
 const DietController = {
     // Crud Tabla de usuarios
+    async getUserById(req, res){
+        const id = req.params.id;
+        try {
+            const queryUserId = `SELECT Nombre, Apellido, Correo, Contraseña FROM usuarios WHERE id = '${id}'`;
+            const result = await client.execute(queryUserId);
+            res.json(JSON.stringify(result.rows));
+
+        }catch(err){
+            console.error("Error al ejecutar la consulta:", err);
+            res.status(500).send("Error interno del servidor");
+        }
+    },
     async getUserByMail(req, res) {
         const mail = req.user.email;
              
@@ -52,13 +64,16 @@ const DietController = {
 
         }
     },
-    async putUser(req, res) {
+    async updateUser(req, res) {
+        const now = new Date();
+        
         try {
             const putUser =req.body;
-            const queryPutUser = `INSERT INTO usuarios (Nombre, Apellido, Contraseña, Rol_Usuario
-                                Correo, Fecha_Registro, createdAt, updatedAr) VALUES (
-                                    '${putUser.Nombre}', '${putUser.Apellido}','${putUser.Contraseña}', '${putUser.Rol_Usuario}',
-                                    '${putUser.Correo}', '${now}', '${now}', '${now}')`
+            console.log('!!!!ID DE ACTUALIZAR!!!!!!',putUser.id);
+            const queryPutUser =`UPDATE usuarios SET Nombre='${putUser.Nombre}', Apellido='${putUser.Apellido}',
+                                Correo='${putUser.Correo}', Contraseña='${putUser.Contraseña}',
+                                Fecha_Registro='${now}', createdAt='${now}', updatedAt='${now}'
+                                WHERE id='${putUser.id}'`;
             const newPutUser = await client.execute(queryPutUser);
             res.json(newPutUser);
         }catch(err){
