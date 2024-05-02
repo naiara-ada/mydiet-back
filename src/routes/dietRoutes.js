@@ -22,6 +22,7 @@ router.put('/updateuser', decodeToken, DietController.updateUser)
 router.get('/dashboard/recipes', decodeToken, DietController.getRecipes)
 router.post('/dashboard/recipes/newrecipe', decodeToken, DietController.newRecipe)
 router.put('/updatetracking', decodeToken, DietController.updateTracking)
+router.put('/updatediary', decodeToken, DietController.updateDiary)
 router.post('/dashboard/users/:id/newtracking', decodeToken, DietController.newTracking)
 
 //router.get('/user/dietary/:id') //saca un dietario por id
@@ -29,6 +30,6 @@ router.post('/dashboard/users/:id/newtracking', decodeToken, DietController.newT
 router.get('/dashboard/agenda', decodeToken, DietController.getAgenda)
 router.get('/dashboard/diaries', decodeToken, DietController.getDiaries)
 router.put('/dashboard/recipes/updaterecipe', decodeToken, DietController.updateRecipe)
-
-
+router.post('/dashboard/diaries/newdiary', decodeToken, DietController.newDiary)
+// putUser 
 module.exports = router;
