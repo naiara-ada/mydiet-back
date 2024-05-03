@@ -229,7 +229,7 @@ const DietController = {
 
     async getAgenda (req, res){
          const queryAgenda = `SELECT seguimientocita.Fecha, seguimientocita.Hora_de_la_Cita, usuarios.Nombre,
-         usuarios.Apellido FROM seguimientocita JOIN usuarios ON usuarios.id = seguimientocita.User_id `
+         usuarios.Apellido, seguimientocita.Descripcion FROM seguimientocita JOIN usuarios ON usuarios.id = seguimientocita.User_id `
 
          try {
             const agenda = await client.execute(queryAgenda)
