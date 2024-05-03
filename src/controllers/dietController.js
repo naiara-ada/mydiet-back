@@ -102,16 +102,22 @@ const DietController = {
     },
     async getDietary(req, res) {
         
-       const plan_id=req.params.id_plan;
+       const id_Plan=req.params.id;
         
         try {
-            const queryDesayunos =`SELECT * FROM desayunos WHERE Dias_id='${plan_id}'`;
+            const queryDesayunos = `SELECT Titulo, Ingredientes, Preparacion 
+                                    FROM desayunos JOIN plan_detalle_dias ON desayunos.id = plan_detalle_dias.Dias_id
+                                    JOIN plans ON plan_detalle_dias.Plan_id = '${id_Plan}'`;
             const desayuno = await client.execute(queryDesayunos);
 
-            const queryComidas =`SELECT * FROM comidas WHERE Dias_id='${plan_id}'`;
+            const queryComidas =`SELECT Titulo, Ingredientes, Preparacion 
+                                FROM comidas JOIN plan_detalle_dias ON comidas.id = plan_detalle_dias.Dias_id
+                                JOIN plans ON plan_detalle_dias.Plan_id = '${id_Plan}'`;
             const comida = await client.execute(queryComidas);
 
-            const queryCenas =`SELECT * FROM cenas WHERE Dias_id='${plan_id}'`;
+            const queryCenas =`SELECT Titulo, Ingredientes, Preparacion 
+                                FROM cenas JOIN plan_detalle_dias ON cenas.id = plan_detalle_dias.Dias_id
+                                JOIN plans ON plan_detalle_dias.Plan_id = '${id_Plan}'`;
             const cena = await client.execute(queryCenas);
 
             const recetas= [desayuno.rows, comida.rows, cena.rows];
@@ -271,6 +277,31 @@ const DietController = {
         res.json(newDiary)       
     } catch (error) {
         console.log(error)
+    }
+  },
+  async deleteDiary (req, res){
+    //DELETE FROM desayunos WHERE id = [ID_DEL_REGISTRO];
+    try {
+        const diary = req.body;
+        console.log('******ID******',diary.id);
+        const queryDeleteDiary= `DELETE FROM dias WHERE id ='${diary.id}'`;
+        const deleteDiary = await client.execute(queryDeleteDiary);
+        res.json(deleteDiary);
+        console.log('OK');
+    }catch(err){
+        console.error("Error al ejecutar la consulta:", err);
+    }    
+  },
+  async deleteRecipe (req, res){
+    try {
+        const recipe =req.body;
+        console.log('******ID******',recipe.id);
+        const queryDeleteRecipe =`DELETE FROM '${recipe.Tabla}' WHERE id = '${recipe.id}'`;
+        const deleteRecipe = await client.execute(queryDeleteRecipe);
+        res.json(deleteRecipe);
+        console.log('OK');
+    }catch(err){
+        console.error("Error al ejecutar la consulta:", err);
     }
   }
 
