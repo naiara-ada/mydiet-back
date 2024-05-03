@@ -102,22 +102,31 @@ const DietController = {
     },
     async getDietary(req, res) {
         
-       const id_Plan=req.params.id;
+       const id_Plan=req.params.id_plan;
         
         try {
-            const queryDesayunos = `SELECT Titulo, Ingredientes, Preparacion 
-                                    FROM desayunos JOIN plan_detalle_dias ON desayunos.id = plan_detalle_dias.Dias_id
-                                    JOIN plans ON plan_detalle_dias.Plan_id = '${id_Plan}'`;
+            const queryDesayunos = `SELECT desayunos.Titulo, desayunos.Ingredientes, desayunos.Preparacion
+                FROM desayunos
+                JOIN dias ON desayunos.id = dias.id
+                JOIN plan_detalle_dias ON plan_detalle_dias.Dias_id = dias.id
+                WHERE plan_detalle_dias.Plan_id = ${parseInt(id_Plan)}`;
+            
             const desayuno = await client.execute(queryDesayunos);
+            console.log('desayuno' ,desayuno)
 
-            const queryComidas =`SELECT Titulo, Ingredientes, Preparacion 
-                                FROM comidas JOIN plan_detalle_dias ON comidas.id = plan_detalle_dias.Dias_id
-                                JOIN plans ON plan_detalle_dias.Plan_id = '${id_Plan}'`;
+            const queryComidas =`SELECT comidas.Titulo, comidas.Ingredientes, comidas.Preparacion
+            FROM comidas
+            JOIN dias ON comidas.id = dias.id
+            JOIN plan_detalle_dias ON plan_detalle_dias.Dias_id = dias.id
+            WHERE plan_detalle_dias.Plan_id = ${parseInt(id_Plan)}`;
             const comida = await client.execute(queryComidas);
+           
 
-            const queryCenas =`SELECT Titulo, Ingredientes, Preparacion 
-                                FROM cenas JOIN plan_detalle_dias ON cenas.id = plan_detalle_dias.Dias_id
-                                JOIN plans ON plan_detalle_dias.Plan_id = '${id_Plan}'`;
+            const queryCenas =`SELECT cenas.Titulo, cenas.Ingredientes, cenas.Preparacion
+            FROM cenas
+            JOIN dias ON cenas.id = dias.id
+            JOIN plan_detalle_dias ON plan_detalle_dias.Dias_id = dias.id
+            WHERE plan_detalle_dias.Plan_id = ${parseInt(id_Plan)}`;
             const cena = await client.execute(queryCenas);
 
             const recetas= [desayuno.rows, comida.rows, cena.rows];
