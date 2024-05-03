@@ -89,7 +89,7 @@ const DietController = {
         const planNombreId={};
         const planId =[];
         try {
-            const queryPlan =`SELECT Plan_id, Nombre  FROM plans WHERE User_id= '${id}'`;
+            const queryPlan =`SELECT id, Nombre  FROM plans WHERE User_id= '${id}'`;
             const result = await client.execute(queryPlan);
             
             res.json(JSON.stringify(result.rows));           
@@ -182,7 +182,12 @@ const DietController = {
             const queryTracking = `INSERT INTO seguimientocita (Descripcion, Fecha, Hora_de_la_Cita, User_id, createdAt, updatedAt) VALUES (
                 '${tracking.Descripcion}', '${tracking.Fecha}', '${tracking.Hora_de_la_Cita}', ${userId}, '${now}','${now}')`
             
-            const newtracking = await client.execute(queryTracking)
+            const newtracking = await client.execute(queryTracking);
+            const queryLastID = `SELECT MAX(id) AS max_id FROM seguimientocita`;
+            const resultlastID = await client.execute(queryLastID);
+            const lastID = resultlastID.rows[0].max_id;
+            console.log('lastID', lastID)
+
             res.json(newtracking)
     } catch (error) {
             console.log(error)
@@ -198,7 +203,7 @@ const DietController = {
 
      async updateTracking(req, res){
         const tracking = req.body;
-        
+        console.log('tracking' , tracking)
         const queryPlan = `UPDATE seguimientocita SET Descripcion = '${tracking.Descripcion}',
         Fecha= '${tracking.Fecha}', Hora_de_la_Cita= '${tracking.Hora_de_la_Cita}', Peso=${tracking.Peso},
         Grasa_Corporal= ${tracking.Grasa} WHERE id=${tracking.id}`;
@@ -272,6 +277,73 @@ const DietController = {
     } catch (error) {
         console.log(error)
     }
+  },
+  async newPlan (req, res){
+    const now = new Date();
+    const userId = req.params.id
+    try {
+        const plan = req.body;
+        const queryPlan = `INSERT INTO plans (Nombre, Descripcion, Fecha, User_id,createdAt, updatedAt )
+            VALUES ('${plan.Nombre}', '${plan.Descripcion}', '${plan.Fecha}', ${userId}, '${now}','${now}' )`;
+        const newPlan = await client.execute(queryPlan);
+        const queryLastID = `SELECT MAX (id) AS max_id FROM plans`;
+        const resultlastID = await client.execute(queryLastID);
+        const lastID = resultlastID.rows[0].max_id;
+        
+        const diaValues = plan.dias.map((dia, index) => `(${lastID}, ${parseInt(dia)}, '${index +1}', '${now}', '${now}')`).join(',');
+        
+        const queryDia = `INSERT INTO plan_detalle_dias (Plan_id, Dias_id, Dia_Semana, createdAt, updatedAt)
+                VALUES ${diaValues}`;
+         
+            const resulDetalle =   await client.execute(queryDia);       
+        res.json(newPlan)     
+    } catch (error) {
+        console.log(error)
+    }
+
+  },
+
+  async getPlanByID (req, res){
+    const {id, id_plan} = req.params
+    console.log('id', id);
+    console.log('id_plan', id_plan);
+
+    const queryDetalle = `SELECT plans.Fecha, plans.Nombre AS nombrePlan, plans.Descripcion, dias.id, dias.Nombre AS nombreDias
+      FROM plans 
+      JOIN plan_detalle_dias ON plan_detalle_dias.Plan_id = plans.id 
+      JOIN dias ON dias.id = plan_detalle_dias.Dias_id WHERE plans.id = ${id_plan}`
+    const detalleplan = await client.execute(queryDetalle);
+    res.json(JSON.stringify(detalleplan.rows))
+  },
+  
+  async updatePlan (req, res){
+    try {
+        const dataPlan = req.body;
+        console.log('dataPlan**', dataPlan)
+        const queryPlan = `UPDATE plans SET Nombre= '${dataPlan.Nombre}', Descripcion= '${dataPlan.Descripcion}', Fecha= '${dataPlan.Fecha}' WHERE id= ${parseInt(dataPlan.id)} `;
+        const upPlan = await client.execute(queryPlan);
+        const queryDetalle0 = `UPDATE plan_detalle_dias SET Dias_id = ${parseInt(dataPlan.dias[0])} WHERE Plan_id = ${parseInt(dataPlan.id)} AND Dia_Semana = 1`;
+        const updetalle = await client.execute(queryDetalle0);
+        const queryDetalle1 = `UPDATE plan_detalle_dias SET Dias_id = ${parseInt(dataPlan.dias[1])} WHERE Plan_id = ${parseInt(dataPlan.id)} AND Dia_Semana = 2`;
+        const updetalle1 = await client.execute(queryDetalle1);
+        const queryDetalle2 = `UPDATE plan_detalle_dias SET Dias_id = ${parseInt(dataPlan.dias[2])} WHERE Plan_id = ${parseInt(dataPlan.id)} AND Dia_Semana = 3`;
+        const updetalle2 = await client.execute(queryDetalle2);
+        const queryDetalle3 = `UPDATE plan_detalle_dias SET Dias_id = ${parseInt(dataPlan.dias[3])} WHERE Plan_id = ${parseInt(dataPlan.id)} AND Dia_Semana = 4`;
+        const updetalle3 = await client.execute(queryDetalle3);
+        const queryDetalle4 = `UPDATE plan_detalle_dias SET Dias_id = ${parseInt(dataPlan.dias[4])} WHERE Plan_id = ${parseInt(dataPlan.id)} AND Dia_Semana = 5`;
+        const updetalle4 = await client.execute(queryDetalle4);
+        const queryDetalle5 = `UPDATE plan_detalle_dias SET Dias_id = ${parseInt(dataPlan.dias[5])} WHERE Plan_id = ${parseInt(dataPlan.id)} AND Dia_Semana = 6`;
+        const updetalle5 = await client.execute(queryDetalle5);
+        const queryDetalle6 = `UPDATE plan_detalle_dias SET Dias_id = ${parseInt(dataPlan.dias[6])} WHERE Plan_id = ${parseInt(dataPlan.id)} AND Dia_Semana = 7`;
+        const updetalle6 = await client.execute(queryDetalle6);
+        
+        res.json(upPlan)
+
+    } catch (error) {
+        console.log(error)
+    }
+    
+    
   }
 
 }

@@ -31,5 +31,8 @@ router.get('/dashboard/agenda', decodeToken, DietController.getAgenda)
 router.get('/dashboard/diaries', decodeToken, DietController.getDiaries)
 router.put('/dashboard/recipes/updaterecipe', decodeToken, DietController.updateRecipe)
 router.post('/dashboard/diaries/newdiary', decodeToken, DietController.newDiary)
+router.post('/dashboard/users/:id/newplan', decodeToken, DietController.newPlan)
+router.get('/dashboard/users/:id/:id_plan', decodeToken, DietController.getPlanByID)
+router.put('/dashboard/users/:id/:id_plan', decodeToken, DietController.updatePlan )
 // putUser 
 module.exports = router;
