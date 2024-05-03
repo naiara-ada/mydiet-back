@@ -272,6 +272,31 @@ const DietController = {
     } catch (error) {
         console.log(error)
     }
+  },
+  async deleteDiary (req, res){
+    //DELETE FROM desayunos WHERE id = [ID_DEL_REGISTRO];
+    try {
+        const diary = req.body;
+        console.log('******ID******',diary.id);
+        const queryDeleteDiary= `DELETE FROM dias WHERE id ='${diary.id}'`;
+        const deleteDiary = await client.execute(queryDeleteDiary);
+        res.json(deleteDiary);
+        console.log('OK');
+    }catch(err){
+        console.error("Error al ejecutar la consulta:", err);
+    }    
+  },
+  async deleteRecipe (req, res){
+    try {
+        const recipe =req.body;
+        console.log('******ID******',recipe.id);
+        const queryDeleteRecipe =`DELETE FROM '${recipe.Tabla}' WHERE id = '${recipe.id}'`;
+        const deleteRecipe = await client.execute(queryDeleteRecipe);
+        res.json(deleteRecipe);
+        console.log('OK');
+    }catch(err){
+        console.error("Error al ejecutar la consulta:", err);
+    }
   }
 
 }
