@@ -105,7 +105,7 @@ const DietController = {
        const id_Plan=req.params.id_plan;
         
         try {
-            const queryDesayunos = `SELECT desayunos.Titulo, desayunos.Ingredientes, desayunos.Preparacion
+            const queryDesayunos = `SELECT desayunos.id, desayunos.Titulo, desayunos.Ingredientes, desayunos.Preparacion
                 FROM desayunos
                 JOIN dias ON desayunos.id = dias.id
                 JOIN plan_detalle_dias ON plan_detalle_dias.Dias_id = dias.id
