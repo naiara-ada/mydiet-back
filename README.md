@@ -4,7 +4,7 @@ Vamos a montar el Back de una aplicación de gestión de dietas, en este readme 
 
 ## Índice:
 
-- [Dependencias utilizadas en el Back](#dependencias)
+- [Dependencias utilizadas en el Back](#dependencias-utilizadas)
 - [Estructura de archivos](#estructura-de-archivos)
 - [Creación del servidor](#creación-del-servidor)
 - [Creación de la base de datos](#creación-de-la-base-de-datos)
