@@ -112,8 +112,7 @@ const DietController = {
                 WHERE plan_detalle_dias.Plan_id = ${parseInt(id_Plan)}`;
             
             const desayuno = await client.execute(queryDesayunos);
-            console.log('desayuno' ,desayuno)
-
+            
             const queryComidas =`SELECT comidas.Titulo, comidas.Ingredientes, comidas.Preparacion
             FROM comidas
             JOIN dias ON comidas.id = dias.id
@@ -210,21 +209,32 @@ const DietController = {
     },
 
     async getUserTracking (req, res){
-        const id = req.params.id
-        const queryPlan =`SELECT * FROM seguimientocita WHERE User_id= '${id}'`;
-        const result = await client.execute(queryPlan);
-        res.json(JSON.stringify(result.rows))
+        try {
+            const id = req.params.id
+            const queryPlan =`SELECT * FROM seguimientocita WHERE User_id= '${id}'`;
+            const result = await client.execute(queryPlan);
+            res.json(JSON.stringify(result.rows))
+            
+        } catch (error) {
+            console.log(error)
+        }
+
+        
      },
 
      async updateTracking(req, res){
-        const tracking = req.body;
-        console.log('tracking' , tracking)
+        try {
+            const tracking = req.body;
         const queryPlan = `UPDATE seguimientocita SET Descripcion = '${tracking.Descripcion}',
         Fecha= '${tracking.Fecha}', Hora_de_la_Cita= '${tracking.Hora_de_la_Cita}', Peso=${tracking.Peso},
         Grasa_Corporal= ${tracking.Grasa} WHERE id=${tracking.id}`;
         
         const newtracking = await client.execute(queryPlan)
         res.json(newtracking)
+            
+        } catch (error) {
+            console.log(error) 
+        }        
     },
 
     async getAgenda (req, res){
@@ -238,9 +248,6 @@ const DietController = {
          } catch (error) {
             console.error(error)
          }
-
-
-
     },
 
     async getDiaries (req, res){
@@ -296,24 +303,23 @@ const DietController = {
   async deleteDiary (req, res){
     //DELETE FROM desayunos WHERE id = [ID_DEL_REGISTRO];
     try {
-        const diary = req.body;
-        console.log('******ID******',diary.id);
+        const diary = req.body;        
         const queryDeleteDiary= `DELETE FROM dias WHERE id ='${diary.id}'`;
         const deleteDiary = await client.execute(queryDeleteDiary);
         res.json(deleteDiary);
-        console.log('OK');
+        
     }catch(err){
         console.error("Error al ejecutar la consulta:", err);
     }    
   },
+
   async deleteRecipe (req, res){
     try {
         const recipe =req.body;
-        console.log('******ID******',recipe.id);
         const queryDeleteRecipe =`DELETE FROM '${recipe.Tabla}' WHERE id = '${recipe.id}'`;
         const deleteRecipe = await client.execute(queryDeleteRecipe);
         res.json(deleteRecipe);
-        console.log('OK');
+        
     }catch(err){
         console.error("Error al ejecutar la consulta:", err);
     }
@@ -326,10 +332,11 @@ const DietController = {
         const queryPlan = `INSERT INTO plans (Nombre, Descripcion, Fecha, User_id,createdAt, updatedAt )
             VALUES ('${plan.Nombre}', '${plan.Descripcion}', '${plan.Fecha}', ${userId}, '${now}','${now}' )`;
         const newPlan = await client.execute(queryPlan);
+        //primero creamos el plan y recogemos el nuevo ID
         const queryLastID = `SELECT MAX (id) AS max_id FROM plans`;
         const resultlastID = await client.execute(queryLastID);
         const lastID = resultlastID.rows[0].max_id;
-        
+        //añadimos los valores a la tabla detalle dias.
         const diaValues = plan.dias.map((dia, index) => `(${lastID}, ${parseInt(dia)}, '${index +1}', '${now}', '${now}')`).join(',');
         
         const queryDia = `INSERT INTO plan_detalle_dias (Plan_id, Dias_id, Dia_Semana, createdAt, updatedAt)
@@ -345,9 +352,7 @@ const DietController = {
 
   async getPlanByID (req, res){
     const {id, id_plan} = req.params
-    console.log('id', id);
-    console.log('id_plan', id_plan);
-
+    
     const queryDetalle = `SELECT plans.Fecha, plans.Nombre AS nombrePlan, plans.Descripcion, dias.id, dias.Nombre AS nombreDias
       FROM plans 
       JOIN plan_detalle_dias ON plan_detalle_dias.Plan_id = plans.id 
@@ -359,23 +364,14 @@ const DietController = {
   async updatePlan (req, res){
     try {
         const dataPlan = req.body;
-        console.log('dataPlan**', dataPlan)
+        
         const queryPlan = `UPDATE plans SET Nombre= '${dataPlan.Nombre}', Descripcion= '${dataPlan.Descripcion}', Fecha= '${dataPlan.Fecha}' WHERE id= ${parseInt(dataPlan.id)} `;
         const upPlan = await client.execute(queryPlan);
-        const queryDetalle0 = `UPDATE plan_detalle_dias SET Dias_id = ${parseInt(dataPlan.dias[0])} WHERE Plan_id = ${parseInt(dataPlan.id)} AND Dia_Semana = 1`;
-        const updetalle = await client.execute(queryDetalle0);
-        const queryDetalle1 = `UPDATE plan_detalle_dias SET Dias_id = ${parseInt(dataPlan.dias[1])} WHERE Plan_id = ${parseInt(dataPlan.id)} AND Dia_Semana = 2`;
-        const updetalle1 = await client.execute(queryDetalle1);
-        const queryDetalle2 = `UPDATE plan_detalle_dias SET Dias_id = ${parseInt(dataPlan.dias[2])} WHERE Plan_id = ${parseInt(dataPlan.id)} AND Dia_Semana = 3`;
-        const updetalle2 = await client.execute(queryDetalle2);
-        const queryDetalle3 = `UPDATE plan_detalle_dias SET Dias_id = ${parseInt(dataPlan.dias[3])} WHERE Plan_id = ${parseInt(dataPlan.id)} AND Dia_Semana = 4`;
-        const updetalle3 = await client.execute(queryDetalle3);
-        const queryDetalle4 = `UPDATE plan_detalle_dias SET Dias_id = ${parseInt(dataPlan.dias[4])} WHERE Plan_id = ${parseInt(dataPlan.id)} AND Dia_Semana = 5`;
-        const updetalle4 = await client.execute(queryDetalle4);
-        const queryDetalle5 = `UPDATE plan_detalle_dias SET Dias_id = ${parseInt(dataPlan.dias[5])} WHERE Plan_id = ${parseInt(dataPlan.id)} AND Dia_Semana = 6`;
-        const updetalle5 = await client.execute(queryDetalle5);
-        const queryDetalle6 = `UPDATE plan_detalle_dias SET Dias_id = ${parseInt(dataPlan.dias[6])} WHERE Plan_id = ${parseInt(dataPlan.id)} AND Dia_Semana = 7`;
-        const updetalle6 = await client.execute(queryDetalle6);
+         
+        for (let i = 0; i<= 6; i++){
+            let querydetalle = `UPDATE plan_detalle_dias SET Dias_id = ${parseInt(dataPlan.dias[i])} WHERE Plan_id = ${parseInt(dataPlan.id)} AND Dia_Semana = ${i+1}`
+            const updetalle = await client.execute(querydetalle);
+        }
         
         res.json(upPlan)
 

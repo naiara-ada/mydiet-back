@@ -5,7 +5,6 @@ const decodeToken = require('../middlewares/authMiddleware.js')
 
 
 router.get('/') 
-//router.post('/login',  decodeToken, DietController.login)
 router.get('/user', decodeToken, DietController.getUserByMail)  //home del user
 router.get('/user/:id/alldietary',decodeToken,  DietController.alldietary) // saca todos los dietarios
 router.get('/user/:id/alldietary/:id_plan',decodeToken, DietController.getDietary) //dietario concreto con todas las recetas e ingredientes y demas
@@ -24,8 +23,6 @@ router.post('/dashboard/recipes/newrecipe', decodeToken, DietController.newRecip
 router.put('/updatetracking', decodeToken, DietController.updateTracking)
 router.put('/updatediary', decodeToken, DietController.updateDiary)
 router.post('/dashboard/users/:id/newtracking', decodeToken, DietController.newTracking)
-
-//router.get('/user/dietary/:id') //saca un dietario por id
 
 router.get('/dashboard/agenda', decodeToken, DietController.getAgenda)
 router.get('/dashboard/diaries', decodeToken, DietController.getDiaries)
